@@ -52,3 +52,25 @@ export interface Produto {
   ativo: boolean;
   criado_em: string;
 }
+
+export interface Pedido {
+  empresa_id: string;
+  id: string;
+  cliente: string;
+  status: 'aberto' | 'faturado' | 'cancelado';
+  vencimento: string;
+  criado_em: string;
+}
+
+export interface ItemPedido {
+  empresa_id: string;
+  pedido_id: string;
+  produto_id: string;
+  quantidade: number;
+  preco: number;
+  produto?: Produto;
+}
+
+export interface PedidoComItens extends Pedido {
+  itens: ItemPedido[];
+}
