@@ -1,6 +1,8 @@
 # Mini ERP Multiempresa
 
-> **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
+> **Status: etapa 2 concluída.** Base React (Vite, Tailwind, rotas por papel, shared/supabase) implementada. Cadastros com busca e paginação em desenvolvimento.
+
+> **Demonstração:** em breve
 
 ## O que é
 
@@ -57,6 +59,59 @@ mini-erp/
 - Usuário da empresa A não vê nem altera dados da empresa B, mesmo chamando a API direto.
 - Cada papel vê só os módulos que lhe cabem.
 - O fluxo de caixa reflete as baixas do dia.
+
+## Como executar
+
+### Requisitos
+
+- Node.js 18+ ou 20+
+- npm ou yarn
+
+### Passos
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/Hey-Pablo/mini-erp.git
+cd mini-erp
+
+# 2. Copie o arquivo de ambiente
+cp .env.example .env
+
+# 3. Instale as dependências
+npm install
+
+# 4. Configure as variáveis de ambiente no .env:
+#    VITE_SUPABASE_URL - URL do seu projeto Supabase
+#    VITE_SUPABASE_ANON_KEY - Chave anônima do Supabase
+
+# 5. Execute o servidor de desenvolvimento
+npm run dev
+
+# 6. Abra no navegador
+# O servidor abrirá automaticamente em http://localhost:5173
+```
+
+### Contas de demonstração
+
+| Email | Senha | Papel |
+|-------|-------|-------|
+| admin@mini-erp.com | senha123 | administrador |
+| vendas@mini-erp.com | vendas123 | vendas |
+| estoque@mini-erp.com | estoque123 | estoque |
+| financeiro@mini-erp.com | financeiro123 | financeiro |
+
+## Comandos
+
+| Comando | Descrição |
+|---------|-------------|
+| `npm run dev` | Inicia o servidor de desenvolvimento |
+| `npm run build` | Build para produção |
+| `npm run preview` | Visualiza o build de produção |
+| `npm test` | Executa os testes unitários |
+| `npm run test:watch` | Executa os testes em modo watch |
+| `npm run lint` | Executa o ESLint |
+
+## Estrutura
 
 ## Prazo
 
