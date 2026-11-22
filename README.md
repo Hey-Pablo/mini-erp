@@ -1,5 +1,7 @@
 # Mini ERP Multiempresa
 
+> **Demonstração:** em breve
+
 > **Status: em desenvolvimento.** O código entra aos poucos; abaixo está o planejamento do projeto.
 
 ## O que é
@@ -13,6 +15,16 @@ Arquitetura multiempresa, regras de negócio transacionais no banco, testes de p
 ## Stack
 
 React, TypeScript, Vite, Tailwind CSS, TanStack Query, React Hook Form e Zod. Supabase (PostgreSQL, RLS, funções em PL/pgSQL). Geração de PDF. Vitest, Playwright, GitHub Actions e Vercel.
+
+## Base de dados e testes
+
+A base inicial contém migração Supabase, dados fictícios e funções transacionais. Consulte [o modelo de dados](docs/modelo-dados.md). O projeto ainda não possui interface.
+
+Requisitos: Node.js e npm. Execute `npm ci --ignore-scripts` e `npm test`. Os testes usam PostgreSQL via PGlite e simulam `auth.uid()`; para validar a integração completa, aplique a migração e o seed em um Supabase local no seu computador e teste autenticação e RLS com usuários reais. Os UUIDs fictícios do seed não criam contas.
+
+## Configurar sua chave
+
+Esta etapa não usa chaves. A integração futura com Supabase deverá usar variáveis locais em `.env`, nunca versionadas.
 
 ## Estrutura
 
