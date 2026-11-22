@@ -1,8 +1,28 @@
 # Mini ERP Multiempresa
 
-> **Status: etapa 2 concluída.** Base React (Vite, Tailwind, rotas por papel, shared/supabase) implementada. Cadastros com busca e paginação em desenvolvimento.
+> **Status: etapa 2 concluída.** Base React (Vite, Tailwind, rotas por papel, shared/supabase) implementada. Cadastros com busca e paginação implementados.
 
 > **Demonstração:** em breve
+
+## Resumo da Implementação (Etapa 2)
+
+Esta etapa entrega a **base completa** do ERP com:
+
+- **Framework**: React 18 + TypeScript + Vite 5
+- **UI**: Tailwind CSS com design responsivo
+- **Estado**: TanStack Query (React Query)
+- **Formulários**: React Hook Form + Zod
+- **Rotas**: React Router DOM com guards por papel
+- **Autenticação**: Supabase Auth (mockável para testes)
+- **Validação**: CPF/CNPJ com dígitos verificadores
+
+### Funcionalidades entregues
+- Tela de login com validação
+- Layout com sidebar por papel (admin, vendas, estoque, financeiro, compras)
+- Cadastro de clientes com busca, paginação e validação
+- Componentes reutilizáveis (Button, Pagination, SearchInput)
+- 15 testes unitários passando
+- Migrations SQL com RLS
 
 ## O que é
 
@@ -112,6 +132,63 @@ npm run dev
 | `npm run lint` | Executa o ESLint |
 
 ## Estrutura
+
+```
+mini-erp/
+├─ src/
+│  ├─ app/
+│  │  ├─ App.tsx              # Rotas principais com guards
+│  │  ├─ DashboardLayout.tsx  # Layout com sidebar por papel
+│  │  └─ LoadingSpinner.tsx # Spinner de carregamento
+│  ├─ modules/
+│  │  ├─ auth/
+│  │  │  └─ pages/LoginPage.tsx
+│  │  ├─ cadastros/
+│  │  │  ├─ pages/ClientesPage.tsx
+│  │  │  ├─ clientes/CadastrosClientes.tsx
+│  │  │  ├─ fornecedores/...
+│  │  │  └─ produtos/...
+│  │  └─ vendas/...
+│  ├─ shared/
+│  │  ├─ api/
+│  │  │  ├─ client.ts        # Cliente API (mockável)
+│  │  │  ├─ hooks.ts         # Hooks de consulta
+│  │  │  └─ types.ts         # Tipos compartilhados
+│  │  ├─ auth/
+│  │  │  ├─ AuthProvider.tsx # Provider de autenticação
+│  │  ├─ lib/
+│  │  │  ├─ supabase.ts      # Cliente Supabase
+│  │  │  └─ utils.ts         # Funções utilitárias
+│  │  ├─ ui/
+│  │  │  ├─ Button.tsx
+│  │  │  ├─ Pagination.tsx
+│  │  │  └─ SearchInput.tsx
+│  │  └─ validators/
+│  │     ├─ cpf.ts
+│  │     └─ cnpj.ts
+│  └─ test/setup.ts
+├─ supabase/
+│  ├─ migrations/
+│  └─ seed.sql
+├─ dist/                      # Build de produção
+├─ package.json
+├─ vite.config.ts
+├─ tsconfig.json
+├─ tailwind.config.js
+└─ README.md
+```
+
+## Estrutura de Dados (Multiempresa)
+
+Todas as tabelas possuem `empresa_id` para isolamento:
+
+| Tabela | Campos principais |
+|--------|------------------|
+| empresas | nome, cnpj, inscricao_estadual |
+| perfis | id (auth.users), empresa_id, email, role |
+| clientes | empresa_id, nome, cpf_cnpj, tipo_pessoa |
+| fornecedores | empresa_id, nome, cpf_cnpj, tipo_pessoa |
+| produtos | empresa_id, nome, codigo, preco_venda, estoque_atual |
 
 ## Prazo
 
