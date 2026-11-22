@@ -55,6 +55,9 @@ export function validarCpf(cpf: string): boolean {
   return temTamanhoValido(cpf) && validarDigitos(cpf);
 }
 
+// Import CNPJ validator for cross-validation
+import { validarCnpj } from './cnpj';
+
 // Valida se é um CPF ou CNPJ válido (formulário genérico)
 export function validarDocumento(documento: string): { valido: boolean; tipo: 'cpf' | 'cnpj' | 'invalido' } {
   const numeros = documento.replace(/\D/g, '');
@@ -69,6 +72,3 @@ export function validarDocumento(documento: string): { valido: boolean; tipo: 'c
 
   return { valido: false, tipo: 'invalido' };
 }
-
-// Import CNPJ validator for cross-validation
-import { validarCnpj } from './cnpj';
