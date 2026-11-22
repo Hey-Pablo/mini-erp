@@ -1,21 +1,21 @@
 import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   test: {
     environment: 'happy-dom',
+    setupFiles: ['./src/vitest.setup.ts'],
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    alias: {
-      '@/shared': '/tmp/mini-erp/src/shared',
-      '@/shared/api': '/tmp/mini-erp/src/shared/api',
-      '@/shared/lib': '/tmp/mini-erp/src/shared/lib',
-      '@/shared/ui': '/tmp/mini-erp/src/shared/ui',
-      '@/shared/validators': '/tmp/mini-erp/src/shared/validators',
-      '@/app': '/tmp/mini-erp/src/app',
-      '@/modules': '/tmp/mini-erp/src/modules',
-    },
     coverage: {
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: ['src/**/*.d.ts', 'src/**/*.test.{ts,tsx}'],
     },

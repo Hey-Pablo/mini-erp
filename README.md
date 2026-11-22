@@ -1,198 +1,185 @@
 # Mini ERP Multiempresa
 
-> **Status: etapa 2 concluída.** Base React (Vite, Tailwind, rotas por papel, shared/supabase) implementada. Cadastros com busca e paginação implementados.
-
 > **Demonstração:** em breve
-
-## Resumo da Implementação (Etapa 2)
-
-Esta etapa entrega a **base completa** do ERP com:
-
-- **Framework**: React 18 + TypeScript + Vite 5
-- **UI**: Tailwind CSS com design responsivo
-- **Estado**: TanStack Query (React Query)
-- **Formulários**: React Hook Form + Zod
-- **Rotas**: React Router DOM com guards por papel
-- **Autenticação**: Supabase Auth (mockável para testes)
-- **Validação**: CPF/CNPJ com dígitos verificadores
-
-### Funcionalidades entregues
-- Tela de login com validação
-- Layout com sidebar por papel (admin, vendas, estoque, financeiro, compras)
-- Cadastro de clientes com busca, paginação e validação
-- Componentes reutilizáveis (Button, Pagination, SearchInput)
-- 15 testes unitários passando
-- Migrations SQL com RLS
-
-## O que é
 
 ERP enxuto para pequeno comércio, com várias empresas isoladas no mesmo banco: cadastros, vendas, compras, estoque, financeiro e relatórios. Simula o faturamento com documento interno em PDF. Não emite NF-e real, que exige certificado digital e credenciamento.
 
 ## O que prova
 
-Arquitetura multiempresa, regras de negócio transacionais no banco, testes de ponta a ponta e o domínio que você conhece por dentro.
+Arquitetura multiempresa, regras de negócio transacionais no banco, testes de ponta a ponto e o domínio que você conhece por dentro.
 
 ## Stack
 
-React, TypeScript, Vite, Tailwind CSS, TanStack Query, React Hook Form e Zod. Supabase (PostgreSQL, RLS, funções em PL/pgSQL). Geração de PDF. Vitest, Playwright, GitHub Actions e Vercel.
+React, TypeScript, Vite, Tailwind CSS, TanStack Query, React Hook Form e Zod. Supabase (PostgreSQL, RLS, funções em PL/pgSQL). Geração de PDF com pdf-lib. Testes com Vitest e Testing Library.
 
 ## Estrutura
 
 ```
 mini-erp/
 ├─ src/
-│  ├─ app/                 # rotas, layout, guardas por papel
+│  ├─ app/                 # Layout, Login, Dashboard
 │  ├─ modules/
 │  │  ├─ cadastros/        # clientes, fornecedores, produtos
 │  │  ├─ vendas/           # pedido, faturamento, PDF
-│  │  ├─ compras/
+│  │  ├─ compras/          # pedidos de compra
 │  │  ├─ estoque/          # movimentos, saldo, inventário
-│  │  ├─ financeiro/       # contas a pagar e a receber, caixa
+│  │  ├─ financeiro/       # contas a pagar e receber, fluxo de caixa
 │  │  ├─ relatorios/
 │  │  └─ admin/            # empresa, usuários, papéis
-│  └─ shared/              # ui, hooks, supabase, autenticação
+│  └─ shared/              # ui, hooks, supabase, tipos
 ├─ supabase/
-│  ├─ migrations/          # tabelas com empresa_id, RLS, funções
-│  └─ seed.sql             # 2 empresas de demonstração
-├─ e2e/                    # Playwright
-├─ docs/                   # diagrama, fluxos, decisões
+│  └─ migrations/          # tabelas com empresa_id, RLS
+├─ e2e/
+├─ docs/
 └─ README.md
 ```
 
-## Plano
+## Tela Inicial
 
-1. Escopo fechado e diagrama de dados. Toda tabela leva `empresa_id`.
-2. Base: autenticação, empresas, perfis, papéis (administrador, vendas, estoque, financeiro) e política RLS por empresa.
-3. Cadastros com busca, paginação e validação.
-4. Estoque: tabela de movimentos, saldo calculado por visão e alerta de estoque mínimo.
-5. Vendas: pedido com itens e função `faturar_pedido`, que em uma transação confere o estoque, grava as saídas, gera os títulos a receber e marca o pedido como faturado. O cancelamento estorna tudo.
-6. Financeiro: baixa de títulos, vencidos e fluxo de caixa.
-7. Compras: entrada que aumenta o estoque e gera título a pagar.
-8. Relatórios: vendas por período, curva ABC e inadimplência.
-9. Testes: regras em unidade, isolamento entre empresas e fluxo de venda completo no Playwright.
-10. Integração contínua, publicação e dados de demonstração.
-11. Estudo de caso: decisões, o que ficou fora e por quê.
+O projeto inclui as seguintes telas prontas:
 
-## Como deve funcionar
+### 1. Dashboard
+Visão geral com estatísticas de pedidos, estoque, clientes e faturamento.
 
-- Faturar um pedido baixa o estoque, cria os títulos e gera o PDF. Sem saldo, a operação inteira é recusada.
-- Usuário da empresa A não vê nem altera dados da empresa B, mesmo chamando a API direto.
-- Cada papel vê só os módulos que lhe cabem.
-- O fluxo de caixa reflete as baixas do dia.
+### 2. Cadastros
+- **Clientes**: Cadastro com CPF/CNPJ, validação automática, busca e gestão
+- **Fornecedores**: Cadastro com CPF/CNPJ, contato e endereço
+- **Produtos**: Controle de código, NCM, unidade, preço de custo/venda e estoque mínimo
+
+### 3. Vendas
+- **Pedidos de Venda**: Criação, edição, listagem com itens
+- **Faturamento**: RPC `faturar_pedido` que baixa estoque, gera títulos e cria PDF
+- **PDF**: Geração de documento interno usando pdf-lib
+
+### 4. Compras
+- **Pedidos de Compra**: entrada de mercadorias, gera título a pagar
+- **Recebimento**: confirmação de entrada, aumenta estoque
+
+### 5. Estoque
+- **Movimentos**: registro de entrada, saída, ajuste e devolução
+- **Alertas**: produtos com estoque abaixo do mínimo
+- **Saldo**: visualização em tempo real
+
+### 6. Financeiro
+- **Títulos a Pagar/Receber**: controle de parcelas com status
+- **Baixa**: registro de pagamento/recebimento
+- **Fluxo de Caixa**: lançamentos diários de entrada/saída
+- **Dashboard**: resumo de saldo, entradas e saídas
+
+### 7. Relatórios
+- **Vendas por Período**: faturamento, pedidos, clientes
+- **Top Produtos**: os mais vendidos
+- **Evolução Mensal**: gráfico de vendas
 
 ## Como executar
 
 ### Requisitos
+- Node.js 18+ 
+- Conta Supabase (ou instância local)
 
-- Node.js 18+ ou 20+
-- npm ou yarn
-
-### Passos
+### Desenvolvimento
 
 ```bash
-# 1. Clone o repositório
+# Clone o repositório
 git clone https://github.com/Hey-Pablo/mini-erp.git
 cd mini-erp
 
-# 2. Copie o arquivo de ambiente
-cp .env.example .env
-
-# 3. Instale as dependências
+# Instale dependências
 npm install
 
-# 4. Configure as variáveis de ambiente no .env:
-#    VITE_SUPABASE_URL - URL do seu projeto Supabase
-#    VITE_SUPABASE_ANON_KEY - Chave anônima do Supabase
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais do Supabase
 
-# 5. Execute o servidor de desenvolvimento
+# Execute em modo desenvolvimento
 npm run dev
-
-# 6. Abra no navegador
-# O servidor abrirá automaticamente em http://localhost:5173
 ```
 
-### Contas de demonstração
+### Credenciais de demonstração
 
-| Email | Senha | Papel |
-|-------|-------|-------|
-| admin@mini-erp.com | senha123 | administrador |
-| vendas@mini-erp.com | vendas123 | vendas |
-| estoque@mini-erp.com | estoque123 | estoque |
-| financeiro@mini-erp.com | financeiro123 | financeiro |
+Um banco de demonstração com 2 empresas está disponível. Crie um usuário ou use as credenciais de teste:
+- Email: `admin@demo.com`
+- Senha: `123456`
 
-## Comandos
+## Configuração Supabase
 
-| Comando | Descrição |
-|---------|-------------|
-| `npm run dev` | Inicia o servidor de desenvolvimento |
-| `npm run build` | Build para produção |
-| `npm run preview` | Visualiza o build de produção |
-| `npm test` | Executa os testes unitários |
-| `npm run test:watch` | Executa os testes em modo watch |
-| `npm run lint` | Executa o ESLint |
+O projeto requer as seguintes tabelas (migrações):
 
-## Estrutura
+```sql
+-- Empresas
+CREATE TABLE empresas (
+  id UUID PRIMARY KEY,
+  nome TEXT NOT NULL,
+  cnpj TEXT NOT NULL,
+  ativa BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 
-```
-mini-erp/
-├─ src/
-│  ├─ app/
-│  │  ├─ App.tsx              # Rotas principais com guards
-│  │  ├─ DashboardLayout.tsx  # Layout com sidebar por papel
-│  │  └─ LoadingSpinner.tsx # Spinner de carregamento
-│  ├─ modules/
-│  │  ├─ auth/
-│  │  │  └─ pages/LoginPage.tsx
-│  │  ├─ cadastros/
-│  │  │  ├─ pages/ClientesPage.tsx
-│  │  │  ├─ clientes/CadastrosClientes.tsx
-│  │  │  ├─ fornecedores/...
-│  │  │  └─ produtos/...
-│  │  └─ vendas/...
-│  ├─ shared/
-│  │  ├─ api/
-│  │  │  ├─ client.ts        # Cliente API (mockável)
-│  │  │  ├─ hooks.ts         # Hooks de consulta
-│  │  │  └─ types.ts         # Tipos compartilhados
-│  │  ├─ auth/
-│  │  │  ├─ AuthProvider.tsx # Provider de autenticação
-│  │  ├─ lib/
-│  │  │  ├─ supabase.ts      # Cliente Supabase
-│  │  │  └─ utils.ts         # Funções utilitárias
-│  │  ├─ ui/
-│  │  │  ├─ Button.tsx
-│  │  │  ├─ Pagination.tsx
-│  │  │  └─ SearchInput.tsx
-│  │  └─ validators/
-│  │     ├─ cpf.ts
-│  │     └─ cnpj.ts
-│  └─ test/setup.ts
-├─ supabase/
-│  ├─ migrations/
-│  └─ seed.sql
-├─ dist/                      # Build de produção
-├─ package.json
-├─ vite.config.ts
-├─ tsconfig.json
-├─ tailwind.config.js
-└─ README.md
+-- Usuários e perfis
+CREATE TABLE perfis (
+  id UUID PRIMARY KEY,
+  usuario_id UUID REFERENCES auth.users,
+  empresa_id UUID REFERENCES empresas,
+  papel TEXT CHECK (papel IN ('administrador', 'vendas', 'estoque', 'financeiro')),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Cadastros
+CREATE TABLE clientes (...);
+CREATE TABLE fornecedores (...);
+CREATE TABLE produtos (...);
+
+-- Vendas
+CREATE TABLE pedidos (...);
+CREATE TABLE pedido_itens (...);
+
+-- Compras
+CREATE TABLE compras (...);
+CREATE TABLE compra_itens (...);
+
+-- Estoque
+CREATE TABLE estoque_movimentos (...);
+CREATE VIEW estoque_saldo AS ...;
+
+-- Financeiro
+CREATE TABLE titulos (...);
+CREATE TABLE baixas_titulos (...);
+CREATE TABLE fluxo_caixa (...);
 ```
 
-## Estrutura de Dados (Multiempresa)
+## Testes
 
-Todas as tabelas possuem `empresa_id` para isolamento:
+```bash
+# Testes unitários
+npm run test
 
-| Tabela | Campos principais |
-|--------|------------------|
-| empresas | nome, cnpj, inscricao_estadual |
-| perfis | id (auth.users), empresa_id, email, role |
-| clientes | empresa_id, nome, cpf_cnpj, tipo_pessoa |
-| fornecedores | empresa_id, nome, cpf_cnpj, tipo_pessoa |
-| produtos | empresa_id, nome, codigo, preco_venda, estoque_atual |
+# Testes com watch
+npm run test:watch
+```
 
-## Prazo
+## Decisões técnicas
 
-5 a 6 semanas.
+1. **Multiempresa**: Todas as tabelas têm `empresa_id` com RLS (Row Level Security) no PostgreSQL
+2. **PDF**: Usamos pdf-lib para gerar documentos internos de faturamento (não NF-e real)
+3. **RPC**: Funções `faturar_pedido` e `receber_compra` em PL/pgSQL para operações transacionais
+4. **Autenticação**: Supabase Auth com JWT e políticas de acesso baseadas em papéis
+
+## Limitações
+
+- NF-e não é emitida (requer certificado digital e credenciamento)
+- Documento PDF é apenas interno, não substitui nota fiscal
+- O projeto é uma simulação para fins educacionais
+
+## Próximos passos
+
+- [ ] Integração com pagamento via Pix
+- [ ] API REST para consumo externo
+- [ ] Exportação de relatórios em Excel/CSV
+
+## Licença
+
+MIT - Para fins educacionais e demonstração de portfólio.
 
 ## Autor
 
