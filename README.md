@@ -40,6 +40,10 @@ React 18, TypeScript, Vite 5, Tailwind CSS, TanStack Query, React Hook Form + Zo
 - CPF: 7 testes unitários
 - CNPJ: 8 testes unitários
 
+## Documento interno do pedido
+
+A função `gerarDocumentoPedido(pedido, itens)` em `src/modules/vendas/documentoPedido.ts` gera bytes PDF com os itens, o total e o aviso de ausência de valor fiscal. Os campos correspondem ao esquema de pedidos e itens; o identificador do produto é exibido no documento. A integração do botão de download depende da futura tela de vendas. Não há emissão de NF-e.
+
 ## Estrutura
 
 ```
