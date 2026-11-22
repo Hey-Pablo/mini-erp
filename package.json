@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:ui": "vitest",
     "test:watch": "vitest watch",
-    "test:db": "node --test",
+    "test:db": "node --test tests/banco.test.js",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
