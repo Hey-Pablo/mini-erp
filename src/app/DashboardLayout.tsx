@@ -7,12 +7,14 @@ import {
   Truck,
   BarChart3,
   LogOut,
-  User as UserIcon
+  User as UserIcon,
+  ClipboardList
 } from 'lucide-react';
 import { Button } from '../shared/ui/Button';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
+  { name: 'Pedidos', href: '/pedidos', icon: ClipboardList, roles: ['administrador', 'vendas'] },
   { name: 'Clientes', href: '/clientes', icon: Users, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Fornecedores', href: '/fornecedores', icon: Truck, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Produtos', href: '/produtos', icon: Package, roles: ['administrador', 'vendas', 'estoque'] },
@@ -88,6 +90,7 @@ export function DashboardLayout() {
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
                 {location.pathname === '/dashboard' && 'Dashboard'}
+                {location.pathname === '/pedidos' && 'Pedidos de Venda'}
                 {location.pathname === '/clientes' && 'Clientes'}
                 {location.pathname === '/fornecedores' && 'Fornecedores'}
                 {location.pathname === '/produtos' && 'Produtos'}
