@@ -52,3 +52,21 @@ export interface Produto {
   ativo: boolean;
   criado_em: string;
 }
+
+export interface Titulo {
+  id: string;
+  tipo: 'pagar' | 'receber';
+  valor: number;
+  vencimento: string;
+  status: 'aberto' | 'baixado' | 'cancelado';
+  baixado_em: string | null;
+  pedido_id: string | null;
+  compra_id: string | null;
+}
+
+export interface FluxoCaixaItem {
+  vencimento: string;
+  total_pagar: number;
+  total_receber: number;
+  saldo: number;
+}

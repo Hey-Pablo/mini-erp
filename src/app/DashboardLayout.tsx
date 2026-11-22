@@ -5,9 +5,10 @@ import {
   Users,
   Package,
   Truck,
-  BarChart3,
   LogOut,
-  User as UserIcon
+  User as UserIcon,
+  FileText,
+  Calculator
 } from 'lucide-react';
 import { Button } from '../shared/ui/Button';
 
@@ -16,7 +17,8 @@ const navigation = [
   { name: 'Clientes', href: '/clientes', icon: Users, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Fornecedores', href: '/fornecedores', icon: Truck, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Produtos', href: '/produtos', icon: Package, roles: ['administrador', 'vendas', 'estoque'] },
-  { name: 'Relatórios', href: '/relatorios', icon: BarChart3, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
+  { name: 'Títulos', href: '/titulos', icon: FileText, roles: ['administrador', 'financeiro'] },
+  { name: 'Fluxo de Caixa', href: '/fluxo-caixa', icon: Calculator, roles: ['administrador', 'financeiro'] },
 ];
 
 export function DashboardLayout() {
@@ -91,6 +93,8 @@ export function DashboardLayout() {
                 {location.pathname === '/clientes' && 'Clientes'}
                 {location.pathname === '/fornecedores' && 'Fornecedores'}
                 {location.pathname === '/produtos' && 'Produtos'}
+                {location.pathname === '/titulos' && 'Títulos'}
+                {location.pathname === '/fluxo-caixa' && 'Fluxo de Caixa'}
               </h2>
             </div>
             <UserIcon className="h-5 w-5 text-gray-400" />

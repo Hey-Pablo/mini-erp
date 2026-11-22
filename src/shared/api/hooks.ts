@@ -59,3 +59,94 @@ export function useProdutos(empresaId: string, search?: string) {
     enabled: !!empresaId,
   });
 }
+
+// Titulo hooks
+import type { Titulo, FluxoCaixaItem } from '../types';
+
+export function useTitulos(
+  empresaId: string,
+  filters?: { tipo?: 'pagar' | 'receber'; status?: 'aberto' | 'baixado' | 'cancelado' },
+  page?: number,
+  pageSize?: number
+) {
+  return useQuery({
+    queryKey: ['titulos', empresaId, filters, page, pageSize],
+    queryFn: async (): Promise<{ data: Titulo[]; total: number }> => {
+      let query = supabase.from('titulos').select('*', { count: 'exact' });
+
+      if (filters?.tipo) {
+        query = query.eq('tipo', filters.tipo);
+      }
+      if (filters?.status) {
+        query = query.eq('status', filters.status);
+      }
+
+      // Paginação
+      const from = (page || 1 - 1) * (pageSize || 10);
+      const to = from + (pageSize || 10) - 1;
+      query = query.range(from, to).order('vencimento', { ascending: true });
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+      return { data: data || [], total: count || 0 };
+    },
+    enabled: !!empresaId,
+  });
+}
+
+export function useBaixarTitulo() {
+  return async (empresaId: string, tituloId: string): Promise<void> => {
+    const { error } = await supabase.rpc('baixar_titulo', {
+      p_empresa: empresaId,
+      p_titulo: tituloId,
+    });
+    if (error) throw error;
+  };
+}
+
+// Fluxo de Caixa - função pura para agregação
+export function calcularFluxoCaixa(titulos: Titulo[]): FluxoCaixaItem[] {
+  const agrupado = new Map<string, { total_pagar: number; total_receber: number }>();
+
+  for (const t of titulos) {
+    if (t.status === 'cancelado') continue;
+
+    const key = t.vencimento;
+    const atual = agrupado.get(key) || { total_pagar: 0, total_receber: 0 };
+
+    if (t.tipo === 'pagar') {
+      atual.total_pagar += t.valor;
+    } else {
+      atual.total_receber += t.valor;
+    }
+
+    agrupado.set(key, atual);
+  }
+
+  // Ordenar por vencimento e calcular saldo acumulado
+  const ordenado = Array.from(agrupado.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([vencimento, valores]) => ({
+      vencimento,
+      total_pagar: valores.total_pagar,
+      total_receber: valores.total_receber,
+      saldo: valores.total_receber - valores.total_pagar,
+    }));
+
+  return ordenado;
+}
+
+export function useFluxoCaixa(empresaId: string) {
+  return useQuery({
+    queryKey: ['fluxo-caixa', empresaId],
+    queryFn: async (): Promise<FluxoCaixaItem[]> => {
+      const { data, error } = await supabase
+        .from('titulos')
+        .select('*')
+        .neq('status', 'cancelado');
+      if (error) throw error;
+      return calcularFluxoCaixa(data || []);
+    },
+    enabled: !!empresaId,
+  });
+}
