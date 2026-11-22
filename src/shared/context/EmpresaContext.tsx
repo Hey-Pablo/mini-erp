@@ -43,23 +43,23 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
 
         // Buscar perfil do usuário
         const { data: perfilData } = await supabase
-          .from<Perfil, 'perfis'>('perfis')
+          .from('perfis')
           .select('*')
           .eq('usuario_id', user.id)
           .single();
 
         if (perfilData) {
-          setPerfil(perfilData);
+          setPerfil(perfilData as Perfil);
 
           // Buscar empresa
           const { data: empresaData } = await supabase
-            .from<Empresa, 'empresas'>('empresas')
+            .from('empresas')
             .select('*')
             .eq('empresa_id', perfilData.empresa_id)
             .single();
 
           if (empresaData) {
-            setEmpresa(empresaData);
+            setEmpresa(empresaData as Empresa);
           }
         }
       } catch (error) {

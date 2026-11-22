@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Mock para ResizeObserver (necessário para alguns componentes)
+// Mock for ResizeObserver (necessário para alguns componentes)
 (globalThis as any).ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
 
-// Mock para window.matchMedia
+// Mock for window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
@@ -23,7 +23,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock para localStorage
+// Mock for localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -34,7 +34,7 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// Mock para sessionStorage
+// Mock for sessionStorage
 const sessionStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),

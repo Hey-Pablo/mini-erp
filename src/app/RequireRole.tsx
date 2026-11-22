@@ -8,7 +8,7 @@ export function RequireRole({
   roles,
   children
 }: {
-  children: React.ReactElement;
+  children: React.ReactNode;
   roles: Perfil['papel'][];
 }) {
   const { perfil, carregando } = useEmpresa();

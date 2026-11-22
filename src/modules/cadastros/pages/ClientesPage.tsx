@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '../../../shared/ui/Card';
 import { Button } from '../../../shared/ui/Button';
 import { SearchInput } from '../../../shared/ui/SearchInput';
@@ -28,13 +28,11 @@ const mockData: Cliente[] = [
   },
 ];
 
-async function fetchClientes(
-  empresaId: string,
+function getClientesMock(
   search: string = '',
   page: number = 1,
   pageSize: number = 10
-): Promise<ClientesResponse> {
-  // Mock de dados - na implementação real, isso chamaria a API
+): ClientesResponse {
   const filtered = search
     ? mockData.filter(c =>
         c.nome.toLowerCase().includes(search.toLowerCase()) ||
@@ -54,15 +52,12 @@ export function ClientesPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-
   const [data, setData] = useState<ClientesResponse>({ data: [], total: 0, page: 1, pageSize });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Simulação de carregamento - na implementação real, usaria useQuery
-  // useEffect(() => {
-  //   fetchClientes(empresaId, search, page, pageSize).then(setData);
-  // }, [empresaId, search, page, pageSize]);
+  useEffect(() => {
+    const result = getClientesMock(search, page, pageSize);
+    setData(result);
+  }, [search, page, pageSize]);
 
   const totalPages = Math.ceil((data.total || 0) / pageSize);
 
@@ -92,12 +87,7 @@ export function ClientesPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
+      
       <Card>
         <CardContent className="p-0">
           {data.data?.length === 0 ? (

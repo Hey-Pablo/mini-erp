@@ -1,4 +1,4 @@
-export { Button, ButtonPropsType as ButtonProps } from './Button';
+export { Button, type ButtonPropsType as ButtonProps } from './Button';
 export { Pagination } from './Pagination';
 export { SearchInput } from './SearchInput';
 export {

@@ -1,1 +1,1 @@
-export { useClientes, useCreateCliente } from './shared/api/hooks';
+export { useClientes, useCreateCliente } from './api/hooks';

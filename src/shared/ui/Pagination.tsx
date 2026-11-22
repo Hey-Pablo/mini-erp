@@ -4,10 +4,9 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  siblingCount?: number;
 }
 
-const Pagination = ({ currentPage, totalPages, onPageChange, siblingCount = 1 }: PaginationProps) => {
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
   const generatePageNumbers = () => {
     const pages: (number | string)[] = [];
 
@@ -96,7 +95,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, siblingCount = 1 }:
 
         return (
           <button
-            key={page}
+            key={`page-${page}-${idx}`}
             onClick={() => onPageChange(page as number)}
             className={`
               flex h-8 w-8 items-center justify-center rounded-md border text-sm font-medium
