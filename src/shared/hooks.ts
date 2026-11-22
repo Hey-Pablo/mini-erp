@@ -1,0 +1,1 @@
+export { useClientes, useCreateCliente } from './api/hooks';
