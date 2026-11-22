@@ -36,6 +36,18 @@ React 18, TypeScript, Vite 5, Tailwind CSS, TanStack Query, React Hook Form + Zo
 - Controle de estoque mínimo
 - Preços de custo e venda
 
+### Compras
+- Lista de compras com fornecedores
+- Formulário para criação de novas compras com itens
+- Botão "Receber" que chama RPC `receber_compra` ao Supabase
+- Status de compra (aberta/recebida)
+
+### Estoque
+- **Saldo de Estoque**: view que soma quantidades de `movimentos_estoque` por produto
+- **Alerta de Mínimo**: destaca produtos com saldo <= estoque_minimo
+- **Movimentos de Estoque**: histórico de entradas (compras) e saídas (pedidos)
+- Colunas: produto, quantidade (positivo=negra, negativo=vermelho), tipo, origem, data
+
 ### Validações
 - CPF: 7 testes unitários
 - CNPJ: 8 testes unitários
@@ -52,7 +64,11 @@ mini-erp/
 │  │  │  ├─ clientes/      # página de clientes
 │  │  │  ├─ fornecedores/  # página de fornecedores
 │  │  │  └─ produtos/      # página de produtos
-│  │  └─ pages/            # outras páginas
+│  │  ├─ compras/           # módulo de compras
+│  │  │  └─ pages/         # ComprasPage.tsx
+│  │  ├─ estoque/           # módulo de estoque
+│  │  │  └─ pages/         # EstoquePage.tsx
+│  │  └─ pages/
 │  └─ shared/
 │     ├─ api/              # cliente Supabase e hooks
 │     ├─ auth/             # providers de autenticação

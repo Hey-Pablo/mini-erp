@@ -7,7 +7,9 @@ import {
   Truck,
   BarChart3,
   LogOut,
-  User as UserIcon
+  User as UserIcon,
+  ShoppingCart,
+  Layers
 } from 'lucide-react';
 import { Button } from '../shared/ui/Button';
 
@@ -16,6 +18,8 @@ const navigation = [
   { name: 'Clientes', href: '/clientes', icon: Users, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Fornecedores', href: '/fornecedores', icon: Truck, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Produtos', href: '/produtos', icon: Package, roles: ['administrador', 'vendas', 'estoque'] },
+  { name: 'Compras', href: '/compras', icon: ShoppingCart, roles: ['administrador', 'estoque'] },
+  { name: 'Estoque', href: '/estoque', icon: Layers, roles: ['administrador', 'estoque'] },
   { name: 'Relatórios', href: '/relatorios', icon: BarChart3, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
 ];
 
@@ -91,6 +95,8 @@ export function DashboardLayout() {
                 {location.pathname === '/clientes' && 'Clientes'}
                 {location.pathname === '/fornecedores' && 'Fornecedores'}
                 {location.pathname === '/produtos' && 'Produtos'}
+                {location.pathname === '/compras' && 'Compras'}
+                {location.pathname === '/estoque' && 'Estoque'}
               </h2>
             </div>
             <UserIcon className="h-5 w-5 text-gray-400" />

@@ -8,6 +8,8 @@ import { LoginPage } from '../modules/auth/pages/LoginPage';
 import { ClientesPage } from '../modules/cadastros/pages/ClientesPage';
 import { FornecedoresPage } from '../modules/cadastros/pages/FornecedoresPage';
 import { ProdutosPage } from '../modules/cadastros/pages/ProdutosPage';
+import { ComprasPage } from '../modules/compras/pages/ComprasPage';
+import { EstoquePage } from '../modules/estoque/pages/EstoquePage';
 import { Dashboard } from './Dashboard';
 import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
@@ -45,6 +47,16 @@ export function App() {
                   <Route path="/produtos" element={
                     <RequireRole roles={['administrador', 'vendas', 'estoque']}>
                       <ProdutosPage />
+                    </RequireRole>
+                  } />
+                  <Route path="/compras" element={
+                    <RequireRole roles={['administrador', 'estoque']}>
+                      <ComprasPage />
+                    </RequireRole>
+                  } />
+                  <Route path="/estoque" element={
+                    <RequireRole roles={['administrador', 'estoque']}>
+                      <EstoquePage />
                     </RequireRole>
                   } />
                 </Route>

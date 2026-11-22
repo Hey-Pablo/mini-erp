@@ -38,6 +38,7 @@ export interface Fornecedor {
   email: string;
   ativo: boolean;
   criado_em: string;
+  empresa_id?: string;
 }
 
 export interface Produto {
@@ -51,4 +52,40 @@ export interface Produto {
   estoque_minimo: number;
   ativo: boolean;
   criado_em: string;
+}
+
+export interface Compra {
+  id: string;
+  empresa_id: string;
+  fornecedor: string;
+  vencimento: string;
+  status: 'aberta' | 'recebida';
+  criado_em: string;
+}
+
+export interface ItemCompra {
+  empresa_id: string;
+  compra_id: string;
+  produto_id: string;
+  quantidade: number;
+  preco: number;
+}
+
+export interface MovimentoEstoque {
+  empresa_id: string;
+  id: string;
+  produto_id: string;
+  quantidade: number;
+  pedido_id: string | null;
+  compra_id: string | null;
+  criado_em: string;
+}
+
+export interface SaldoEstoque {
+  empresa_id: string;
+  produto_id: string;
+  nome: string;
+  estoque_minimo: number;
+  saldo: number;
+  estoque_baixo: boolean;
 }
