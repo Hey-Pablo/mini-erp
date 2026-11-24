@@ -13,6 +13,8 @@ import { Dashboard } from './Dashboard';
 import { RequireAuth } from './RequireAuth';
 import { RequireRole } from './RequireRole';
 import { TitulosPage } from '../modules/financeiro/pages/TitulosPage';
+import { ComprasPage } from '../modules/compras/pages/ComprasPage';
+import { EstoquePage } from '../modules/estoque/pages/EstoquePage';
 import { FluxoCaixaPage } from '../modules/financeiro/pages/FluxoCaixaPage';
 
 const queryClient = new QueryClient();
@@ -58,6 +60,16 @@ export function App() {
                   <Route path="/fluxo-caixa" element={
                     <RequireRole roles={['administrador', 'financeiro']}>
                       <FluxoCaixaPage />
+                    </RequireRole>
+                  } />
+                  <Route path="/compras" element={
+                    <RequireRole roles={['administrador', 'estoque']}>
+                      <ComprasPage />
+                    </RequireRole>
+                  } />
+                  <Route path="/estoque" element={
+                    <RequireRole roles={['administrador', 'estoque']}>
+                      <EstoquePage />
                     </RequireRole>
                   } />
                   <Route path="/pedidos" element={
