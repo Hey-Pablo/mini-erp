@@ -339,7 +339,7 @@ export function PedidosPage() {
                 </div>
                 <div>
                   <p className="text-gray-500">Criado em</p>
-                  <p className="font-medium">{formatDateTime(selectedPedido.criado_em)}</p>
+                  <p className="font-medium">{selectedPedido.criado_em ? formatDateTime(selectedPedido.criado_em) : 'Não disponível'}</p>
                 </div>
               </div>
 
@@ -548,8 +548,7 @@ function PedidoFormModal({ empresaId, initialData, onClose, onSuccess }: PedidoF
                       value={item.produto_id}
                       onChange={(e) => {
                         const produto = produtos.find(p => p.id === e.target.value);
-                        updateItem(index, 'produto_id', e.target.value);
-                        if (produto) updateItem(index, 'preco', produto.preco_venda);
+                        setItens(current => current.map((item, i) => i === index ? { ...item, produto_id: e.target.value, preco: produto?.preco_venda ?? item.preco } : item));
                       }}
                       className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary-500 ${errors[`item_${index}_produto`] ? 'border-red-500' : 'border-gray-300'}`}
                     >

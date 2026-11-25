@@ -75,6 +75,7 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, newSession) => {
         if (newSession) {
+          setCarregando(true);
           fetchEmpresaEEmpresa();
         } else {
           setEmpresa(null);
