@@ -19,6 +19,7 @@ import { Button } from '../shared/ui/Button';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
+  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['administrador'] },
   { name: 'Pedidos', href: '/pedidos', icon: ClipboardList, roles: ['administrador', 'vendas'] },
   { name: 'Compras', href: '/compras', icon: ShoppingCart, roles: ['administrador', 'estoque'] },
   { name: 'Estoque', href: '/estoque', icon: Boxes, roles: ['administrador', 'estoque'] },

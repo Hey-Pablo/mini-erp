@@ -83,10 +83,10 @@ export function usePedidos(empresaId: string, search?: string, page?: number, pa
           *,
           itens_pedido (
             *,
-            produtos (id, nome, codigo, preco_venda, unidade)
+            produtos (id, nome, estoque_minimo)
           )
         `)
-        .order('criado_em', { ascending: false });
+        .order('vencimento', { ascending: false });
 
       if (search) {
         query = query.or(`cliente.ilike.%${search}%,id.ilike.%${search}%`);
@@ -94,7 +94,7 @@ export function usePedidos(empresaId: string, search?: string, page?: number, pa
 
       const { data, error } = await query;
       if (error) throw error;
-      return { data: (data || []) as unknown as PedidoComItens[], total: (data || []).length };
+      return { data: (data || []).map(p => ({ ...p, itens: (p.itens_pedido || []).map((i: any) => ({ ...i, produto: i.produtos })) })) as unknown as PedidoComItens[], total: (data || []).length };
     },
     enabled: !!empresaId,
   });
@@ -111,7 +111,7 @@ export function usePedido(empresaId: string, pedidoId: string) {
           *,
           itens_pedido (
             *,
-            produtos (id, nome, codigo, preco_venda, unidade)
+            produtos (id, nome, estoque_minimo)
           )
         `)
         .eq('id', pedidoId)
