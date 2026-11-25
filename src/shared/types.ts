@@ -92,3 +92,39 @@ export interface ItemPedido {
 export interface PedidoComItens extends Pedido {
   itens: ItemPedido[];
 }
+
+export interface ProdutoEstoque {
+  id: string;
+  nome: string;
+  estoque_minimo: number;
+}
+
+export interface Compra {
+  id: string;
+  fornecedor: string;
+  vencimento: string;
+  status: 'aberta' | 'recebida';
+}
+
+export interface ItemCompra {
+  produto_id: string;
+  quantidade: number;
+  preco: number;
+}
+
+export interface MovimentoEstoque {
+  id: string;
+  produto_id: string;
+  quantidade: number;
+  pedido_id: string | null;
+  compra_id: string | null;
+  criado_em: string;
+}
+
+export interface SaldoProduto {
+  produto_id: string;
+  nome: string;
+  saldo: number;
+  estoque_minimo: number;
+  abaixo_do_minimo: boolean;
+}

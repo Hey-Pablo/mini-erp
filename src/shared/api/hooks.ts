@@ -267,3 +267,101 @@ export function useFluxoCaixa(empresaId: string) {
     enabled: !!empresaId,
   });
 }
+
+// Compras e estoque
+import type { Compra, ItemCompra, MovimentoEstoque, ProdutoEstoque } from '../types';
+
+export function useCompras(empresaId: string) {
+  return useQuery({
+    queryKey: ['compras', empresaId],
+    queryFn: async (): Promise<Compra[]> => {
+      const { data, error } = await supabase
+        .from('compras')
+        .select('id, fornecedor, vencimento, status')
+        .eq('empresa_id', empresaId)
+        .order('vencimento', { ascending: true });
+      if (error) throw error;
+      return (data || []) as Compra[];
+    },
+    enabled: !!empresaId,
+  });
+}
+
+export function useCreateCompra() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ empresaId, compra, itens }: {
+      empresaId: string;
+      compra: { fornecedor: string; vencimento: string };
+      itens: ItemCompra[];
+    }) => {
+      const { data, error } = await supabase
+        .from('compras')
+        .insert({ ...compra, empresa_id: empresaId, status: 'aberta' })
+        .select('id')
+        .single();
+      if (error) throw error;
+
+      const { error: itensError } = await supabase
+        .from('itens_compra')
+        .insert(itens.map((i) => ({ ...i, empresa_id: empresaId, compra_id: data.id })));
+      if (itensError) throw itensError;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['compras'] });
+    },
+  });
+}
+
+export function useReceberCompra() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ empresaId, compraId }: { empresaId: string; compraId: string }) => {
+      const { error } = await supabase.rpc('receber_compra', {
+        p_empresa: empresaId,
+        p_compra: compraId,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['compras'] });
+      queryClient.invalidateQueries({ queryKey: ['movimentos-estoque'] });
+      queryClient.invalidateQueries({ queryKey: ['titulos'] });
+    },
+  });
+}
+
+export function useProdutosEstoque(empresaId: string) {
+  return useQuery({
+    queryKey: ['produtos-estoque', empresaId],
+    queryFn: async (): Promise<ProdutoEstoque[]> => {
+      const { data, error } = await supabase
+        .from('produtos')
+        .select('id, nome, estoque_minimo')
+        .eq('empresa_id', empresaId)
+        .order('nome', { ascending: true });
+      if (error) throw error;
+      return (data || []) as ProdutoEstoque[];
+    },
+    enabled: !!empresaId,
+  });
+}
+
+export function useMovimentosEstoque(empresaId: string) {
+  return useQuery({
+    queryKey: ['movimentos-estoque', empresaId],
+    queryFn: async (): Promise<MovimentoEstoque[]> => {
+      const { data, error } = await supabase
+        .from('movimentos_estoque')
+        .select('id, produto_id, quantidade, pedido_id, compra_id, criado_em')
+        .eq('empresa_id', empresaId)
+        .order('criado_em', { ascending: false });
+      if (error) throw error;
+      return (data || []) as MovimentoEstoque[];
+    },
+    enabled: !!empresaId,
+  });
+}

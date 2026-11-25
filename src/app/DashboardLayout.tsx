@@ -9,13 +9,17 @@ import {
   User as UserIcon,
   FileText,
   Calculator,
-  ClipboardList
+  ClipboardList,
+  ShoppingCart,
+  Boxes
 } from 'lucide-react';
 import { Button } from '../shared/ui/Button';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Pedidos', href: '/pedidos', icon: ClipboardList, roles: ['administrador', 'vendas'] },
+  { name: 'Compras', href: '/compras', icon: ShoppingCart, roles: ['administrador', 'estoque'] },
+  { name: 'Estoque', href: '/estoque', icon: Boxes, roles: ['administrador', 'estoque'] },
   { name: 'Clientes', href: '/clientes', icon: Users, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Fornecedores', href: '/fornecedores', icon: Truck, roles: ['administrador', 'vendas', 'estoque', 'financeiro'] },
   { name: 'Produtos', href: '/produtos', icon: Package, roles: ['administrador', 'vendas', 'estoque'] },
