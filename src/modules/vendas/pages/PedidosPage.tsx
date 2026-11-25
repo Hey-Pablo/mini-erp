@@ -6,6 +6,7 @@ import { Pagination } from '../../../shared/ui/Pagination';
 import { useEmpresa } from '../../../shared/context';
 import { usePedidos, useFaturarPedido, useCancelarPedido, useProdutos, useCreatePedido } from '../../../shared/api/hooks';
 import type { PedidoComItens, Produto } from '../../../shared/types';
+import { gerarDocumentoPedido } from '../documentoPedido';
 import {
   Plus,
   Eye,
@@ -15,6 +16,7 @@ import {
   Package,
   ChevronDown,
   ChevronUp,
+  Download,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -55,9 +57,10 @@ interface PedidoRowProps {
   onView: (pedido: PedidoComItens) => void;
   onFaturar: (pedido: PedidoComItens) => void;
   onCancelar: (pedido: PedidoComItens) => void;
+  onBaixarPDF?: (pedido: PedidoComItens) => void;
 }
 
-function PedidoRow({ pedido, onView, onFaturar, onCancelar }: PedidoRowProps) {
+function PedidoRow({ pedido, onView, onFaturar, onCancelar, onBaixarPDF }: PedidoRowProps) {
   const [expanded, setExpanded] = useState(false);
   const total = pedido.itens.reduce((acc, item) => acc + item.quantidade * item.preco, 0);
 
@@ -90,9 +93,16 @@ function PedidoRow({ pedido, onView, onFaturar, onCancelar }: PedidoRowProps) {
               </Button>
             )}
             {pedido.status === 'faturado' && (
-              <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={(e) => { e.stopPropagation(); onCancelar(pedido); }}>
-                <XCircle className="w-4 h-4" />
-              </Button>
+              <>
+                {onBaixarPDF && (
+                  <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); onBaixarPDF(pedido); }}>
+                    <Download className="w-4 h-4" />
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={(e) => { e.stopPropagation(); onCancelar(pedido); }}>
+                  <XCircle className="w-4 h-4" />
+                </Button>
+              </>
             )}
           </div>
         </td>
@@ -182,6 +192,33 @@ export function PedidosPage() {
     handleCloseForm();
   };
 
+  const handleBaixarPDF = async (pedido: PedidoComItens) => {
+    try {
+      const documento = {
+        id: pedido.id,
+        cliente: pedido.cliente,
+        vencimento: pedido.vencimento,
+      };
+      const itens = pedido.itens.map(item => ({
+        produto_id: item.produto_id,
+        quantidade: item.quantidade,
+        preco: item.preco,
+      }));
+      const bytes = await gerarDocumentoPedido(documento, itens);
+      const blob = new Blob([bytes as unknown as ArrayBuffer], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pedido-${pedido.id.slice(0, 8)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      toast.error('Erro ao gerar PDF: ' + (err.message || 'Erro desconhecido'));
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]" data-testid="loading-spinner">
@@ -255,6 +292,7 @@ export function PedidosPage() {
                         onView={handleView}
                         onFaturar={handleFaturar}
                         onCancelar={handleCancelar}
+                        onBaixarPDF={handleBaixarPDF}
                       />
                     ))}
                   </tbody>

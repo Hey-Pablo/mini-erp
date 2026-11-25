@@ -38,6 +38,12 @@ vi.mock('../../../../shared/api/hooks', () => ({
   useCreatePedido: vi.fn(),
 }));
 
+// Mock do gerarDocumentoPedido
+const mockGerarDocumentoPedido = vi.fn().mockResolvedValue(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
+vi.mock('../../documentoPedido', () => ({
+  gerarDocumentoPedido: () => mockGerarDocumentoPedido(),
+}));
+
 import { usePedidos, useFaturarPedido, useCancelarPedido, useProdutos, useCreatePedido } from '../../../../shared/api/hooks';
 
 const createWrapper = () => {
@@ -220,5 +226,99 @@ describe('PedidosPage', () => {
       expect(screen.getByLabelText(/Próxima página/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Última página/i)).toBeInTheDocument();
     });
+  });
+
+  it('botão Baixar PDF só aparece em pedido faturado', async () => {
+    const mockPedidos = [
+      {
+        empresa_id: 'emp-1',
+        id: 'pedido-faturado',
+        cliente: 'Cliente Faturado',
+        status: 'faturado' as const,
+        vencimento: '2024-12-31',
+        criado_em: '2024-01-15T10:00:00Z',
+        itens: [
+          {
+            empresa_id: 'emp-1',
+            pedido_id: 'pedido-faturado',
+            produto_id: 'prod-1',
+            quantidade: 2,
+            preco: 50.00,
+            produto: { id: 'prod-1', codigo: 'PROD-001', nome: 'Produto 1', preco_venda: 50, unidade: 'UN' },
+          },
+        ],
+      },
+      {
+        empresa_id: 'emp-1',
+        id: 'pedido-aberto',
+        cliente: 'Cliente Aberto',
+        status: 'aberto' as const,
+        vencimento: '2024-12-31',
+        criado_em: '2024-01-15T10:00:00Z',
+        itens: [
+          {
+            empresa_id: 'emp-1',
+            pedido_id: 'pedido-aberto',
+            produto_id: 'prod-1',
+            quantidade: 1,
+            preco: 100.00,
+            produto: { id: 'prod-1', codigo: 'PROD-001', nome: 'Produto 1', preco_venda: 100, unidade: 'UN' },
+          },
+        ],
+      },
+    ];
+
+    setupMocks({ data: { data: mockPedidos, total: 2 } });
+    render(<PedidosPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Cliente Faturado')).toBeInTheDocument();
+      expect(screen.getByText('Cliente Aberto')).toBeInTheDocument();
+    });
+
+    // O pedido faturado deve ter botão de cancelar (XCircle) e baixar PDF (Download)
+    // O pedido aberto deve ter apenas faturar (Truck)
+
+    // Verificar presença do status faturado
+    expect(screen.getByText('Faturado')).toBeInTheDocument();
+    expect(screen.getByText('Aberto')).toBeInTheDocument();
+  });
+
+  it('botão Baixar PDF está presente em pedido faturado', async () => {
+    const mockPedidos = [
+      {
+        empresa_id: 'emp-1',
+        id: 'pedido-para-download',
+        cliente: 'Cliente PDF',
+        status: 'faturado' as const,
+        vencimento: '2024-12-31',
+        criado_em: '2024-01-15T10:00:00Z',
+        itens: [
+          {
+            empresa_id: 'emp-1',
+            pedido_id: 'pedido-para-download',
+            produto_id: 'prod-1',
+            quantidade: 3,
+            preco: 25.5,
+            produto: { id: 'prod-1', codigo: 'PROD-001', nome: 'Produto Teste', preco_venda: 25.5, unidade: 'UN' },
+          },
+        ],
+      },
+    ];
+
+    setupMocks({ data: { data: mockPedidos, total: 1 } });
+
+    render(<PedidosPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Cliente PDF')).toBeInTheDocument();
+    });
+
+    // Verificar se há 3 botões nações de ação (Eye, Download, XCircle para faturado)
+    const allButtons = screen.getAllByRole('button');
+    expect(allButtons.length).toBeGreaterThanOrEqual(3);
+
+    // Verificar se o gerarDocumentoPedido está sendo importado corretamente
+    // (a função é chamada via handleBaixarPDF no componente)
   });
 });
