@@ -42,7 +42,16 @@ React 18, TypeScript, Vite 5, Tailwind CSS, TanStack Query, React Hook Form + Zo
 
 ## Documento interno do pedido
 
-A função `gerarDocumentoPedido(pedido, itens)` em `src/modules/vendas/documentoPedido.ts` gera bytes PDF com os itens, o total e o aviso de ausência de valor fiscal. Os campos correspondem ao esquema de pedidos e itens; o identificador do produto é exibido no documento. A integração do botão de download depende da futura tela de vendas. Não há emissão de NF-e.
+A função `gerarDocumentoPedido(pedido, itens)` em `src/modules/vendas/documentoPedido.ts` gera bytes PDF com os itens, o total e o aviso de ausência de valor fiscal. Os campos correspondem ao esquema de pedidos e itens; o identificador do produto é exibido no documento. Não há emissão de NF-e.
+
+### Download de PDF
+
+Na tela de pedidos (PedidosPage), o botão "Baixar PDF" está disponível para pedidos com status **faturado**. Ao clicar, o sistema:
+
+1. Monta o documento a partir do pedido (id, cliente, vencimento) e itens (produto_id, quantidade, preço)
+2. Gera os bytes PDF via `gerarDocumentoPedido`
+3. Cria um Blob e dispara o download com nome `pedido-<id>.pdf`
+4. Revoke o URL temporário após o download
 
 ## Estrutura
 
