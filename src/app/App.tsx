@@ -16,6 +16,7 @@ import { TitulosPage } from '../modules/financeiro/pages/TitulosPage';
 import { ComprasPage } from '../modules/compras/pages/ComprasPage';
 import { EstoquePage } from '../modules/estoque/pages/EstoquePage';
 import { FluxoCaixaPage } from '../modules/financeiro/pages/FluxoCaixaPage';
+import { RelatoriosPage } from '../modules/relatorios/RelatoriosPage';
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ export function App() {
                       <EstoquePage />
                     </RequireRole>
                   } />
+                  <Route path="/relatorios" element={<RequireRole roles={['administrador']}><RelatoriosPage /></RequireRole>} />
                   <Route path="/pedidos" element={
                     <RequireRole roles={['administrador', 'vendas']}>
                       <PedidosPage />
