@@ -17,13 +17,14 @@ export function RelatoriosPage() {
   const [atrasos, setAtrasos] = useState<Atraso[]>([]);
   const [erro, setErro] = useState('');
   useEffect(() => {
-    if (!empresa?.empresa_id) return;
+    const db = supabase;
+    if (!empresa?.empresa_id || !db) return;
     let ativo = true;
     const carregar = async () => {
       const args = { p_empresa: empresa.empresa_id, p_inicio: inicio, p_fim: fim };
       const [v, a, i] = await Promise.all([
-        supabase.rpc('relatorio_vendas', args), supabase.rpc('relatorio_abc', args),
-        supabase.rpc('relatorio_inadimplencia', { p_empresa: empresa.empresa_id, p_data: fim }),
+        db.rpc('relatorio_vendas', args), db.rpc('relatorio_abc', args),
+        db.rpc('relatorio_inadimplencia', { p_empresa: empresa.empresa_id, p_data: fim }),
       ]);
       if (!ativo) return;
       if (v.error || a.error || i.error) { setErro('Não foi possível carregar os relatórios. Confira o período e tente novamente.'); return; }
