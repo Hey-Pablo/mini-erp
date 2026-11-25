@@ -16,6 +16,7 @@ vi.mock('@/shared/api/client', () => ({
     range: vi.fn().mockReturnThis(),
     rpc: vi.fn().mockResolvedValue({ error: null }),
   },
+  bancoConfigurado: () => true,
 }));
 
 // Mock AuthContext

@@ -1,5 +1,7 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useEmpresa } from '../shared/context';
+import { useAuth } from '../shared/auth';
+import { BancoDesconectado } from '../shared/ui/BancoDesconectado';
 import {
   Home,
   Users,
@@ -29,6 +31,7 @@ const navigation = [
 
 export function DashboardLayout() {
   const { perfil, usuario, signOut } = useEmpresa();
+  const { bancoConectado } = useAuth();
   const location = useLocation();
 
   // Filtrar navegação baseada no papel do usuário
@@ -94,6 +97,11 @@ export function DashboardLayout() {
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
+              {!bancoConectado && (
+                <div className="mb-2">
+                  <BancoDesconectado variant="warning" />
+                </div>
+              )}
               <h2 className="text-lg font-semibold text-gray-900">
                 {location.pathname === '/dashboard' && 'Dashboard'}
                 {location.pathname === '/pedidos' && 'Pedidos de Venda'}

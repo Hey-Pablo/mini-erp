@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { EstoquePage } from '../pages/EstoquePage';
 
 vi.mock('../../../shared/context', () => ({
-  useEmpresa: () => ({ empresa: { empresa_id: 'emp-1', nome: 'Empresa Teste' } }),
+  useEmpresa: () => ({ empresa: { empresa_id: 'emp-1', nome: 'Empresa Teste' }, bancoConectado: true }),
 }));
 
 vi.mock('../../../shared/api/hooks', () => ({
@@ -23,6 +23,10 @@ vi.mock('../../../shared/api/hooks', () => ({
       { id: 'm2', produto_id: 'p2', quantidade: 8, pedido_id: null, compra_id: 'c1', criado_em: '2026-01-10T12:00:00Z' },
     ],
   }),
+}));
+
+vi.mock('../../../shared/api/client', () => ({
+  bancoConfigurado: () => true,
 }));
 
 describe('EstoquePage', () => {
