@@ -81,6 +81,62 @@ mini-erp/
 └─ package.json
 ```
 
+## Configurar o banco
+
+Antes de usar o sistema, é necessário configurar o banco de dados. Siga os passos abaixo:
+
+### 1. Criar projeto no Supabase (ou usar PostgreSQL próprio)
+
+- Acesse https://supabase.com e crie um novo projeto
+- Copie a URL do projeto (ex: `https://xyz.supabase.co`) e a chave anon (em Settings > API > Project Settings > API Keys)
+
+### 2. Aplicar migrations
+
+```bash
+npm install -g supabase
+supabase db push
+# ou, se usando PostgreSQL local:
+# psql -h localhost -U postgres -d minierp -f supabase/migrations/20261121000000_base.sql
+```
+
+### 3. Executar seed.sql
+
+```bash
+psql -h localhost -U postgres -d minierp -f supabase/seed.sql
+# ou, se usando Supabase CLI:
+# supabase db remote
+```
+
+### 4. Configurar variáveis de ambiente
+
+```bash
+cp .env.example .env
+# Editar .env com os valores reais:
+# VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+# VITE_SUPABASE_ANON_KEY=sua-chave-anon-aqui
+```
+
+### 5. Criar usuários e definir papéis
+
+No painel do Supabase, vá para SQL e execute:
+
+```sql
+-- Criar usuário (se não usar auth.usuarios)
+INSERT INTO perfis (empresa_id, usuario_id, papel) VALUES
+  ('10000000-0000-0000-0000-000000000001', '<uuid-do-usuario>', 'administrador');
+```
+
+O `usuario_id` é o UUID do usuário no Supabase Auth (acessível via `supabase.auth.getUser()` após login).
+
+### 6. Rodar a aplicação
+
+```bash
+npm install
+npm run dev
+```
+
+Acesse `http://localhost:5173` e faça login com as credenciais do usuário criado.
+
 ## Desenvolvimento
 
 ```bash
@@ -91,12 +147,13 @@ npm run dev
 ## Testes
 
 ```bash
-npm run test
+npm test
 ```
 
-### Credenciais de teste
-- Email: `admin@minierp.com`
-- Senha: `senha123`
+Os testes incluem:
+- Testes de validação CPF/CNPJ
+- Testes de unidade do banco com PGlite
+- Testes de integração com Testing Library
 
 ## Próximos passos
 

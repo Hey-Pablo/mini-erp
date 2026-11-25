@@ -2,12 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from './client';
 import type { Cliente, Pedido, ItemPedido, PedidoComItens } from '../types';
 
+// Helper to ensure supabase is available
+const getSupabase = () => {
+  if (!supabase) {
+    throw new Error('Banco não conectado. Configure as variáveis de ambiente.');
+  }
+  return supabase;
+};
+
 // Cliente hooks
 export function useClientes(empresaId: string, search?: string, page?: number, pageSize?: number) {
   return useQuery({
     queryKey: ['clientes', empresaId, search, page, pageSize],
     queryFn: async (): Promise<{data: Cliente[], total: number}> => {
-      let query = supabase.from('clientes');
+      const db = getSupabase();
+      let query = db.from('clientes');
 
       if (search) {
         // @ts-expect-error - Postgrest types don't include .or() but it exists at runtime
@@ -32,7 +41,8 @@ export function useFornecedores(empresaId: string) {
   return useQuery({
     queryKey: ['fornecedores', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('fornecedores').select('*');
+      const db = getSupabase();
+      const { data, error } = await db.from('fornecedores').select('*');
       if (error) throw error;
       return data || [];
     },
@@ -45,7 +55,8 @@ export function useProdutos(empresaId: string, search?: string) {
   return useQuery({
     queryKey: ['produtos', empresaId, search],
     queryFn: async () => {
-      let query = supabase.from('produtos');
+      const db = getSupabase();
+      let query = db.from('produtos');
 
       if (search) {
         // @ts-expect-error - Postgrest types don't include .or() but it exists at runtime
@@ -65,7 +76,8 @@ export function usePedidos(empresaId: string, search?: string, page?: number, pa
   return useQuery({
     queryKey: ['pedidos', empresaId, search, page, pageSize],
     queryFn: async (): Promise<{data: PedidoComItens[], total: number}> => {
-      let query = supabase
+      const db = getSupabase();
+      let query = db
         .from('pedidos')
         .select(`
           *,
@@ -92,7 +104,8 @@ export function usePedido(empresaId: string, pedidoId: string) {
   return useQuery({
     queryKey: ['pedido', empresaId, pedidoId],
     queryFn: async (): Promise<PedidoComItens | null> => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('pedidos')
         .select(`
           *,
@@ -116,8 +129,9 @@ export function useCreatePedido() {
 
   return useMutation({
     mutationFn: async ({ empresaId, pedido, itens }: { empresaId: string; pedido: Omit<Pedido, 'empresa_id' | 'id' | 'status' | 'criado_em'>; itens: Omit<ItemPedido, 'empresa_id' | 'pedido_id'>[] }) => {
+      const db = getSupabase();
       // Inserir pedido
-      const { data: pedidoData, error: pedidoError } = await supabase
+      const { data: pedidoData, error: pedidoError } = await db
         .from('pedidos')
         .insert({ ...pedido, empresa_id: empresaId, status: 'aberto' })
         .select()
@@ -132,7 +146,7 @@ export function useCreatePedido() {
         pedido_id: pedidoData.id,
       }));
 
-      const { error: itensError } = await supabase.from('itens_pedido').insert(itensComPedido);
+      const { error: itensError } = await db.from('itens_pedido').insert(itensComPedido);
       if (itensError) throw itensError;
 
       return pedidoData;
@@ -148,7 +162,8 @@ export function useFaturarPedido() {
 
   return useMutation({
     mutationFn: async ({ empresaId, pedidoId }: { empresaId: string; pedidoId: string }) => {
-      const { error } = await supabase.rpc('faturar_pedido', {
+      const db = getSupabase();
+      const { error } = await db.rpc('faturar_pedido', {
         p_empresa: empresaId,
         p_pedido: pedidoId,
       });
@@ -165,7 +180,8 @@ export function useCancelarPedido() {
 
   return useMutation({
     mutationFn: async ({ empresaId, pedidoId }: { empresaId: string; pedidoId: string }) => {
-      const { error } = await supabase.rpc('cancelar_pedido', {
+      const db = getSupabase();
+      const { error } = await db.rpc('cancelar_pedido', {
         p_empresa: empresaId,
         p_pedido: pedidoId,
       });
@@ -189,7 +205,8 @@ export function useTitulos(
   return useQuery({
     queryKey: ['titulos', empresaId, filters, page, pageSize],
     queryFn: async (): Promise<{ data: Titulo[]; total: number }> => {
-      let query = supabase.from('titulos').select('*', { count: 'exact' });
+      const db = getSupabase();
+      let query = db.from('titulos').select('*', { count: 'exact' });
 
       if (filters?.tipo) {
         query = query.eq('tipo', filters.tipo);
@@ -213,7 +230,8 @@ export function useTitulos(
 
 export function useBaixarTitulo() {
   return async (empresaId: string, tituloId: string): Promise<void> => {
-    const { error } = await supabase.rpc('baixar_titulo', {
+    const db = getSupabase();
+    const { error } = await db.rpc('baixar_titulo', {
       p_empresa: empresaId,
       p_titulo: tituloId,
     });
@@ -257,7 +275,8 @@ export function useFluxoCaixa(empresaId: string) {
   return useQuery({
     queryKey: ['fluxo-caixa', empresaId],
     queryFn: async (): Promise<FluxoCaixaItem[]> => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('titulos')
         .select('*')
         .neq('status', 'cancelado');
@@ -275,7 +294,8 @@ export function useCompras(empresaId: string) {
   return useQuery({
     queryKey: ['compras', empresaId],
     queryFn: async (): Promise<Compra[]> => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('compras')
         .select('id, fornecedor, vencimento, status')
         .eq('empresa_id', empresaId)
@@ -296,14 +316,15 @@ export function useCreateCompra() {
       compra: { fornecedor: string; vencimento: string };
       itens: ItemCompra[];
     }) => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('compras')
         .insert({ ...compra, empresa_id: empresaId, status: 'aberta' })
         .select('id')
         .single();
       if (error) throw error;
 
-      const { error: itensError } = await supabase
+      const { error: itensError } = await db
         .from('itens_compra')
         .insert(itens.map((i) => ({ ...i, empresa_id: empresaId, compra_id: data.id })));
       if (itensError) throw itensError;
@@ -320,7 +341,8 @@ export function useReceberCompra() {
 
   return useMutation({
     mutationFn: async ({ empresaId, compraId }: { empresaId: string; compraId: string }) => {
-      const { error } = await supabase.rpc('receber_compra', {
+      const db = getSupabase();
+      const { error } = await db.rpc('receber_compra', {
         p_empresa: empresaId,
         p_compra: compraId,
       });
@@ -338,7 +360,8 @@ export function useProdutosEstoque(empresaId: string) {
   return useQuery({
     queryKey: ['produtos-estoque', empresaId],
     queryFn: async (): Promise<ProdutoEstoque[]> => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('produtos')
         .select('id, nome, estoque_minimo')
         .eq('empresa_id', empresaId)
@@ -354,7 +377,8 @@ export function useMovimentosEstoque(empresaId: string) {
   return useQuery({
     queryKey: ['movimentos-estoque', empresaId],
     queryFn: async (): Promise<MovimentoEstoque[]> => {
-      const { data, error } = await supabase
+      const db = getSupabase();
+      const { data, error } = await db
         .from('movimentos_estoque')
         .select('id, produto_id, quantidade, pedido_id, compra_id, criado_em')
         .eq('empresa_id', empresaId)

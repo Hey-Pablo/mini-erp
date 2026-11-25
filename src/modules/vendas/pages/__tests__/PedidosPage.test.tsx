@@ -27,6 +27,7 @@ vi.mock('../../../../shared/api/client', () => ({
     },
   },
   createSupabaseClient: vi.fn(),
+  bancoConfigurado: () => false,
 }));
 
 // Mock dos hooks
