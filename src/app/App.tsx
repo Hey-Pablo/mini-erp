@@ -16,10 +16,14 @@ import { TitulosPage } from '../modules/financeiro/pages/TitulosPage';
 import { ComprasPage } from '../modules/compras/pages/ComprasPage';
 import { EstoquePage } from '../modules/estoque/pages/EstoquePage';
 import { FluxoCaixaPage } from '../modules/financeiro/pages/FluxoCaixaPage';
+import { bancoConfigurado } from '../shared/api/client';
 
 const queryClient = new QueryClient();
 
 export function App() {
+  if (!bancoConfigurado) {
+    return <main className="p-8"><h1>Mini ERP</h1><p>Banco não conectado — veja Configurar o banco no README.</p></main>;
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

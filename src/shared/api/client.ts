@@ -7,6 +7,8 @@ const getEnv = (key: string, fallback: string) => {
   return import.meta.env[key] || fallback;
 };
 
+export const bancoConfigurado = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 export const createSupabaseClient = () => {
   const supabaseUrl = getEnv('VITE_SUPABASE_URL', 'https://placeholder.supabase.co');
   const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY', 'placeholder-anon-key');

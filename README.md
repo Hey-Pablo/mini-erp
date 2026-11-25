@@ -81,6 +81,20 @@ mini-erp/
 └─ package.json
 ```
 
+## Configurar o banco
+
+O repositório não inclui um banco hospedado nem credenciais reais. Para conectar sua própria instância Supabase:
+
+1. Crie um projeto Supabase sob sua responsabilidade.
+2. Instale a CLI Supabase e conecte o diretório ao projeto escolhido.
+3. Aplique as migrações com `supabase db push`.
+4. Execute `supabase/seed.sql` no editor SQL do projeto para carregar dados fictícios.
+5. Crie usuários no Supabase Auth e associe os IDs aos papéis na tabela `perfis`, para a empresa desejada.
+6. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os dados públicos do seu projeto. Nunca use a chave de serviço no navegador.
+7. Rode `npm ci` e `npm run dev`; entre com um usuário criado no passo 5.
+
+Sem as duas variáveis, a aplicação exibe uma orientação para configurar o banco. O banco local PGlite usado nos testes não é um servidor Supabase e não fornece autenticação ou API ao navegador.
+
 ## Desenvolvimento
 
 ```bash
