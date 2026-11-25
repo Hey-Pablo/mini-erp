@@ -40,6 +40,10 @@ React 18, TypeScript, Vite 5, Tailwind CSS, TanStack Query, React Hook Form + Zo
 - CPF: 7 testes unitários
 - CNPJ: 8 testes unitários
 
+## Relatórios
+
+Disponíveis para administradores, com período inclusivo. As vendas e a curva ABC usam a data UTC da saída de estoque no faturamento e excluem pedidos cancelados. A curva ordena produtos pelo valor vendido e classifica pelo percentual acumulado anterior: A até 80%, B até 95% e C acima disso. A inadimplência mostra títulos a receber abertos com vencimento anterior à data final escolhida.
+
 ## Documento interno do pedido
 
 A função `gerarDocumentoPedido(pedido, itens)` em `src/modules/vendas/documentoPedido.ts` gera bytes PDF com os itens, o total e o aviso de ausência de valor fiscal. Os campos correspondem ao esquema de pedidos e itens; o identificador do produto é exibido no documento. Não há emissão de NF-e.
