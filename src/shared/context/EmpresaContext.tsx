@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '../api/client';
+import { supabase, bancoConfigurado } from '../api/client';
 import type { Empresa, Perfil, Usuario } from '../types';
 
 interface EmpresaContextType {
@@ -7,6 +7,7 @@ interface EmpresaContextType {
   usuario: Usuario | null;
   perfil: Perfil | null;
   carregando: boolean;
+  bancoConectado: boolean;
   temPermissao: (papels: Perfil['papel'][]) => boolean;
   signOut: () => Promise<void>;
 }
@@ -18,9 +19,18 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const [bancoConectado, setBancoConectado] = useState(false);
 
   useEffect(() => {
+    // Verificar se o banco está configurado
+    setBancoConectado(bancoConfigurado());
+
     const fetchEmpresaEEmpresa = async () => {
+      if (!supabase) {
+        setCarregando(false);
+        return;
+      }
+
       try {
         // Buscar usuário atual
         const { data: { user } } = await supabase.auth.getUser();
@@ -72,21 +82,23 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     fetchEmpresaEEmpresa();
 
     // Ouvir mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
-        if (newSession) {
-          fetchEmpresaEEmpresa();
-        } else {
-          setEmpresa(null);
-          setUsuario(null);
-          setPerfil(null);
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (_event, newSession) => {
+          if (newSession) {
+            fetchEmpresaEEmpresa();
+          } else {
+            setEmpresa(null);
+            setUsuario(null);
+            setPerfil(null);
+          }
         }
-      }
-    );
+      );
 
-    return () => {
-      subscription.unsubscribe();
-    };
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
   }, []);
 
   const temPermissao = (papels: Perfil['papel'][]) => {
@@ -95,7 +107,9 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setEmpresa(null);
     setUsuario(null);
     setPerfil(null);
@@ -106,6 +120,7 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     usuario,
     perfil,
     carregando,
+    bancoConectado,
     temPermissao,
     signOut,
   };

@@ -5,10 +5,11 @@ import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/forms/Input';
 import { Label } from '../../../shared/ui/forms/Label';
 import { Card, CardHeader, CardTitle, CardContent } from '../../../shared/ui/Card';
+import { BancoDesconectado } from '../../../shared/ui/BancoDesconectado';
 import { Building } from 'lucide-react';
 
 export function LoginPage() {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, bancoConectado } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,7 +43,9 @@ export function LoginPage() {
           <CardTitle className="text-2xl text-center">Mini ERP</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {!bancoConectado && <BancoDesconectado variant="warning" />}
+
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {error && (
               <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
                 {error}
@@ -77,11 +80,6 @@ export function LoginPage() {
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
-
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <p>Credenciais de teste:</p>
-            <p className="font-mono">admin@minierp.com / senha123</p>
-          </div>
         </CardContent>
       </Card>
     </div>

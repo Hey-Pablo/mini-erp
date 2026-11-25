@@ -12,3 +12,4 @@ export {
 export { Input } from './forms/Input';
 export { Label } from './forms/Label';
 export { Select } from './forms/Select';
+export { BancoDesconectado } from './BancoDesconectado';
