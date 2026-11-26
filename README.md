@@ -2,7 +2,7 @@
 
 > **Demonstração:** em breve
 
-> **Status:** pronto para revisão. Cadastros, vendas (com PDF), compras, estoque, financeiro e relatórios estão na `main`, com testes de banco (PGlite), 76 testes de tela, e2e Playwright e CI. Falta apenas a publicação (Vercel) por conta do Pablo.
+> **Status:** concluído. Cadastros, vendas (com PDF), compras, estoque, financeiro e relatórios estão na `main`, com testes de banco (PGlite), 76 testes de tela, e2e Playwright e CI. Falta apenas a publicação (Vercel) por conta do Pablo.
 
 ## Problema e solução
 
